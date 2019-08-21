@@ -118,6 +118,23 @@ class OpencpnPlugin(BasePlugin):
             time=t)
         return self.nmea_line(line)
 
+    def xdr(self,roll_angle,pitch_angle):
+        '''
+        return an XDR message with roll and pitch angles
+        '''
+        line = 'HCXDR,A,{0:5.3f},D,PITCH,A,{1:5.3f},D,ROLL'.format(roll_angle, pitch_angle)
+
+        return self.nmea_line(line)
+
+
+    def dbt(self,depth):
+        '''
+        return a DBT message with depth in metres
+        '''
+        line = 'SDDBT,,f,{0:.3},M,,F'.format(depth)
+
+        return self.nmea_line(line)
+
 
     def vtg(self, old_latitude, old_longitude, latitude, longitude, old_utc_datetime, utc_datetime):
         '''
@@ -150,7 +167,7 @@ class OpencpnPlugin(BasePlugin):
         wind_speed_units can be one of K/M/N,
         reference can be 'R' = Relative, 'T' = True.
         '''
-        line = 'MWV,{0:.3g},{reference},{speed},{speed_units},A'.format(
+        line = 'IIMWV,{0:.3g},{reference},{speed},{speed_units},A'.format(
             wind_angle,
             reference=reference,
             speed=wind_speed,
@@ -160,7 +177,7 @@ class OpencpnPlugin(BasePlugin):
 
 
     def rsa(self,rudder_angle):
-        line = 'RSA,{0:.3g},A,0.0,X'.format(rudder_angle)
+        line = 'IIRSA,{0:.3g},A,0.0,X'.format(rudder_angle)
         return self.nmea_line(line)
 
     def wpt(self,latitude, longitude, title):
@@ -181,14 +198,15 @@ class OpencpnPlugin(BasePlugin):
         message = message + u"\r\n"
         sock.sendto(message.encode("utf-8"), dest)
 
-    def send_udp_packet(self, message, sock):
-        sock.sendto(message, ('255.255.255.255',10000))
+    def send_udp_packet(self, destination, message, sock):
+        sock.sendto(message, (destination, 10000))
 
     def main(self):
         time.sleep(5)
         device = self.config.get('device', '/dev/ttyUSB0')
         baud = self.config.get('baud', 115200)
         delay = self.config.get('delay', 1)
+        destip = self.config.get('destination_ip', '255.255.255.255')
 
         self.ser = serial.Serial(device, baud, timeout=0.1)
 
@@ -213,16 +231,23 @@ class OpencpnPlugin(BasePlugin):
             rudder = self.boatd.boat.target_rudder_angle
             wind_abs = self.boatd.boat.wind_absolute()
             wind = self.boatd.boat.wind_apparent()
+            roll = self.boatd.boat.roll()
+            pitch = self.boatd.boat.pitch()
+            depth = self.boatd.boat.depth()
+
+
 
             messages = [
                 self.gga(lat,
                     lon,
                     datetime.datetime.now()),
-                self.hdm(float(heading)),
                 self.vtg(old_lat,old_lon,lat,lon,old_time,time.time()),
+                self.hdm(float(heading)),
+                self.xdr(float(roll),float(pitch)),
                 self.mwv(float(wind_abs), reference='T', wind_speed=1),
                 self.mwv(float(wind), reference='R', wind_speed=1),
                 self.rsa(float(rudder)),
+                self.dbt(float(depth))
             ]
 
             #save current positions for the next calculation of vmg/cmg
@@ -242,7 +267,7 @@ class OpencpnPlugin(BasePlugin):
             for m in messages:
                 message = m + "\r\n"
                 self.ser.write(str.encode(message))
-                self.send_udp_packet(str.encode(message),sock)
+                self.send_udp_packet(destip,str.encode(message),sock)
 
             time.sleep(delay)
 
