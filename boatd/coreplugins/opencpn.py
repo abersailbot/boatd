@@ -208,7 +208,11 @@ class OpencpnPlugin(BasePlugin):
         delay = self.config.get('delay', 1)
         destip = self.config.get('destination_ip', '255.255.255.255')
 
-        self.ser = serial.Serial(device, baud, timeout=0.1)
+        try:
+            self.ser = serial.Serial(device, baud, timeout=0.1)
+            serial_configured = 1
+        except:
+            serial_configured = 0
 
         self.waypoint_count = 0
         self.waypoints = []
@@ -266,7 +270,9 @@ class OpencpnPlugin(BasePlugin):
 
             for m in messages:
                 message = m + "\r\n"
-                self.ser.write(str.encode(message))
+                if serial_configured == 1:
+                    self.ser.write(str.encode(message))
+
                 self.send_udp_packet(destip,str.encode(message),sock)
 
             time.sleep(delay)
