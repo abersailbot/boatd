@@ -29,6 +29,7 @@ log = logging.getLogger(__name__)
 
 
 def get_wind_dict(boat):
+    
     try:
         speed = boat.wind_speed()
     except (AttributeError, TypeError):
@@ -55,6 +56,9 @@ class BoatHandler(tornado.web.RequestHandler):
 
     def get(self):
         response = {
+            'depth': self.boat.depth(),
+            'roll': self.boat.roll(),
+            'pitch': self.boat.pitch(),
             'heading': self.boat.heading(),
             'wind': get_wind_dict(self.boat),
             'position': self.boat.position(),

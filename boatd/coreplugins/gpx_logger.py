@@ -10,7 +10,7 @@ gpx_trkpt_format = (
              
              '<time>{datetime}</time>'
              
-             '<cmt>Rudder:{rudder} Sail:{sail} Wind:{wind_direction} Heading:{heading}</cmt>'
+             '<cmt>Rudder:{rudder} Sail:{sail} Wind:{wind_direction} Heading:{heading} Roll:{roll} Pitch:{pitch} Depth:{depth}</cmt>'
              
              '</trkpt>'
              '\n'
@@ -56,6 +56,9 @@ class GPXLoggerPlugin(BasePlugin):
                 boat_lat, boat_lon = self.boatd.boat.position()
                 boat_sail = self.boatd.boat.get_sail()
                 boat_rudder = self.boatd.boat.get_rudder()
+                boat_roll = self.boatd.boat.get_roll()
+                boat_pitch = self.boatd.boat.get_pitch()
+                boat_depth = self.boatd.boat.get_depth()
                 boat_datetime = datetime.datetime.now().isoformat()
 
                 log_line = gpx_trkpt_format.format(
@@ -66,6 +69,9 @@ class GPXLoggerPlugin(BasePlugin):
                         sail=boat_sail,
                         wind_direction=boat_wind_direction,
                         heading=boat_heading,
+                        roll=boat_roll,
+                        pitch=boat_pitch,
+                        depth=boat_depth,
                 )
 
                 f.write(log_line)

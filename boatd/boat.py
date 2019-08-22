@@ -32,6 +32,9 @@ class Boat(object):
         self.config = config if config else {}
 
         self._cached_heading = 0
+        self._cached_roll = 0
+        self._cached_pitch = 0 
+        self._cached_depth = 0
         self._cached_wind_speed = 0
         self._cached_apparent_wind_direction = 0
         self._cached_absolute_wind_direction = 0
@@ -76,6 +79,27 @@ class Boat(object):
         '''Update cached sensor values.'''
         try:
             self._cached_heading = self.driver.heading()
+        except Exception as e:
+            log.error('Got error when trying to update heading: '
+                      '{}'.format(e))
+            self.driver.reconnect()
+
+        try:
+            self._cached_roll = self.driver.roll()
+        except Exception as e:
+            log.error('Got error when trying to update heading: '
+                      '{}'.format(e))
+            self.driver.reconnect()
+
+        try:
+            self._cached_pitch = self.driver.pitch()
+        except Exception as e:
+            log.error('Got error when trying to update heading: '
+                      '{}'.format(e))
+            self.driver.reconnect()
+
+        try:
+            self._cached_depth = self.driver.depth()
         except Exception as e:
             log.error('Got error when trying to update heading: '
                       '{}'.format(e))
@@ -149,6 +173,15 @@ class Boat(object):
     def __getattr__(self, name):
         '''Return the requested attribute from the currently loaded driver'''
         return self.driver.handlers.get(name)
+
+    def roll(self):
+        return self._cached_roll
+
+    def pitch(self):
+        return self._cached_pitch
+
+    def depth(self):
+        return self._cached_depth
 
     def heading(self):
         return self._cached_heading

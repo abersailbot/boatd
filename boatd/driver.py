@@ -33,6 +33,36 @@ class BaseBoatdDriver(object):
         '''
         pass
 
+
+    @abstractmethod
+    def roll(self):
+        '''
+        Must return the roll of the boat in degrees, relative to the horizon.
+
+        :rtype: float between -180 and 180
+        '''
+        pass
+
+
+    @abstractmethod
+    def pitch(self):
+        '''
+        Must return the pitch of the boat in degrees, relative to the horizon.
+
+        :rtype: float between -180 and 180
+        '''
+        pass
+
+    @abstractmethod
+    def depth(self):
+        '''
+        Must return the water depth in metres.
+
+        :rtype: float between 0 and 11000
+        '''
+        pass
+
+
     @abstractmethod
     def wind_speed(self):
         '''
