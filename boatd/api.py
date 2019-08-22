@@ -25,7 +25,7 @@ import tornado.web
 from . import exceptions
 
 # reported api version
-VERSION = 1.3
+VERSION = 1.3.1
 
 log = logging.getLogger(__name__)
 
