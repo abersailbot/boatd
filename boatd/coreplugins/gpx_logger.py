@@ -54,11 +54,11 @@ class GPXLoggerPlugin(BasePlugin):
                 boat_heading = self.boatd.boat.heading()
                 boat_wind_direction = self.boatd.boat.wind_absolute()
                 boat_lat, boat_lon = self.boatd.boat.position()
-                boat_sail = self.boatd.boat.get_sail()
-                boat_rudder = self.boatd.boat.get_rudder()
-                boat_roll = self.boatd.boat.get_roll()
-                boat_pitch = self.boatd.boat.get_pitch()
-                boat_depth = self.boatd.boat.get_depth()
+                boat_sail = self.boatd.boat.target_sail_angle
+                boat_rudder = self.boatd.boat.target_rudder_angle
+                boat_roll = self.boatd.boat.roll()
+                boat_pitch = self.boatd.boat.pitch()
+                boat_depth = self.boatd.boat.depth()
                 boat_datetime = datetime.datetime.now().isoformat()
 
                 log_line = gpx_trkpt_format.format(
