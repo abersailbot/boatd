@@ -5,12 +5,12 @@ import time
 
 gpx_trkpt_format = (
              '\t\t\t<trkpt '
-             'lat="{lat}" '
-             'lon="{long}">'
+             'lat="{lat:2.5f}" '
+             'lon="{long:3.5f}">'
              
              '<time>{datetime}</time>'
              
-             '<cmt>Rudder:{rudder} Sail:{sail} Wind:{wind_direction} Heading:{heading} Roll:{roll} Pitch:{pitch} Depth:{depth}</cmt>'
+             '<cmt>Rudder:{rudder:2.0f} Sail:{sail:2.0f} Wind:{wind_direction:2.0f} Heading:{heading:2.0f} Roll:{roll:2.0f} Pitch:{pitch:2.0f} Depth:{depth:4.2f}</cmt>'
              
              '</trkpt>'
              '\n'
@@ -27,7 +27,7 @@ gpx_wpt_format = (
 class GPXLoggerPlugin(BasePlugin):
     def main(self):
         self.period = self.config.period
-        self.filename = self.config.filename + time.strftime("_%Y-%m-%d_H%M%SZ.gpx")
+        self.filename = self.config.filename + time.strftime("_%Y-%m-%d_%H%M%SZ.gpx")
         
         self.startfile()
         
