@@ -27,7 +27,7 @@ gpx_wpt_format = (
 class GPXLoggerPlugin(BasePlugin):
     def main(self):
         self.period = self.config.period
-        self.filename = self.config.filename + time.strftime("_%d-%m-%yT%H,%M,%SZ.gpx")
+        self.filename = self.config.filename + time.strftime("_%Y-%m-%d_H%M%SZ.gpx")
         
         self.startfile()
         
